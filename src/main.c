@@ -1,6 +1,6 @@
-#include <stdio.h>
+#include "assignment01.h"
 
 int main() {
-    printf("Hello, World!\n");
+    runAssignment01();
     return 0;
 }

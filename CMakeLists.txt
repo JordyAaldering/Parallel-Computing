@@ -5,5 +5,5 @@ set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -fopenmp")
 
-file(GLOB SOURCES src/*.c)
-add_executable(Parallel_Computing ${SOURCES})
+file(GLOB ASSIGNMENTS src/assignment*.h)
+add_executable(main src/main.c ${ASSIGNMENTS})
