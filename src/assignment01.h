@@ -116,57 +116,63 @@ void runAssignment01() {
 #endif //PARALLEL_COMPUTING_ASSIGNMENT01_H
 
 /**
-=== Task 1 ===
-Estimated 3.141593 in 0.890s with 100000000 steps and  1 threads
-Estimated 3.141593 in 0.813s with 100000000 steps and  2 threads
-Estimated 3.141593 in 0.750s with 100000000 steps and  3 threads
-Estimated 3.141593 in 0.500s with 100000000 steps and  4 threads
-Estimated 3.141593 in 0.468s with 100000000 steps and  5 threads
-Estimated 3.141593 in 0.532s with 100000000 steps and  6 threads
-Estimated 3.141593 in 0.500s with 100000000 steps and  7 threads
-Estimated 3.141593 in 0.578s with 100000000 steps and  8 threads
-Estimated 3.141593 in 0.547s with 100000000 steps and  9 threads
-Estimated 3.141593 in 0.593s with 100000000 steps and 10 threads
-Estimated 3.141593 in 0.563s with 100000000 steps and 11 threads
-Estimated 3.141593 in 0.531s with 100000000 steps and 12 threads
-Estimated 3.141593 in 0.484s with 100000000 steps and 13 threads
-Estimated 3.141593 in 0.516s with 100000000 steps and 14 threads
-Estimated 3.141593 in 0.422s with 100000000 steps and 15 threads
-Estimated 3.141593 in 0.469s with 100000000 steps and 16 threads
+ === Task 1 ===
+ Estimated 3.141593 in 0.890s with 100000000 steps and  1 threads
+ Estimated 3.141593 in 0.813s with 100000000 steps and  2 threads
+ Estimated 3.141593 in 0.750s with 100000000 steps and  3 threads
+ Estimated 3.141593 in 0.500s with 100000000 steps and  4 threads
+ Estimated 3.141593 in 0.468s with 100000000 steps and  5 threads
+ Estimated 3.141593 in 0.532s with 100000000 steps and  6 threads
+ Estimated 3.141593 in 0.500s with 100000000 steps and  7 threads
+ Estimated 3.141593 in 0.578s with 100000000 steps and  8 threads
+ Estimated 3.141593 in 0.547s with 100000000 steps and  9 threads
+ Estimated 3.141593 in 0.593s with 100000000 steps and 10 threads
+ Estimated 3.141593 in 0.563s with 100000000 steps and 11 threads
+ Estimated 3.141593 in 0.531s with 100000000 steps and 12 threads
+ Estimated 3.141593 in 0.484s with 100000000 steps and 13 threads
+ Estimated 3.141593 in 0.516s with 100000000 steps and 14 threads
+ Estimated 3.141593 in 0.422s with 100000000 steps and 15 threads
+ Estimated 3.141593 in 0.469s with 100000000 steps and 16 threads
 
-===Task 2 ===
-Estimated 3.141593 in 0.922s with 100000000 steps and  1 threads
-Estimated 3.141593 in 0.609s with 100000000 steps and  2 threads
-Estimated 3.141593 in 0.453s with 100000000 steps and  3 threads
-Estimated 3.141593 in 0.344s with 100000000 steps and  4 threads
-Estimated 3.141593 in 0.344s with 100000000 steps and  5 threads
-Estimated 3.141593 in 0.312s with 100000000 steps and  6 threads
-Estimated 3.141593 in 0.250s with 100000000 steps and  7 threads
-Estimated 3.141593 in 0.250s with 100000000 steps and  8 threads
-Estimated 3.141593 in 0.219s with 100000000 steps and  9 threads
-Estimated 3.141593 in 0.250s with 100000000 steps and 10 threads
-Estimated 3.141593 in 0.250s with 100000000 steps and 11 threads
-Estimated 3.141593 in 0.203s with 100000000 steps and 12 threads
-Estimated 3.141593 in 0.203s with 100000000 steps and 13 threads
-Estimated 3.141593 in 0.187s with 100000000 steps and 14 threads
-Estimated 3.141593 in 0.235s with 100000000 steps and 15 threads
-Estimated 3.141593 in 0.218s with 100000000 steps and 16 threads
+ Performance increases rapidly with the first four threads.
+ After that performance stops improving.
 
-===Task 3 ===
-Estimated 3.141593 in 0.594s with 100000000 steps and  1 threads
-Estimated 3.141593 in 0.375s with 100000000 steps and  2 threads
-Estimated 3.141593 in 0.328s with 100000000 steps and  3 threads
-Estimated 3.141593 in 0.266s with 100000000 steps and  4 threads
-Estimated 3.141593 in 0.203s with 100000000 steps and  5 threads
-Estimated 3.141593 in 0.203s with 100000000 steps and  6 threads
-Estimated 3.141593 in 0.188s with 100000000 steps and  7 threads
-Estimated 3.141593 in 0.171s with 100000000 steps and  8 threads
-Estimated 3.141593 in 0.188s with 100000000 steps and  9 threads
-Estimated 3.141593 in 0.156s with 100000000 steps and 10 threads
-Estimated 3.141593 in 0.156s with 100000000 steps and 11 threads
-Estimated 3.141593 in 0.157s with 100000000 steps and 12 threads
-Estimated 3.141593 in 0.157s with 100000000 steps and 13 threads
-Estimated 3.141593 in 0.140s with 100000000 steps and 14 threads
-Estimated 3.141593 in 0.141s with 100000000 steps and 15 threads
-Estimated 3.141593 in 0.172s with 100000000 steps and 16 threads
-**/
+ ===Task 2 ===
+ Estimated 3.141593 in 0.922s with 100000000 steps and  1 threads
+ Estimated 3.141593 in 0.609s with 100000000 steps and  2 threads
+ Estimated 3.141593 in 0.453s with 100000000 steps and  3 threads
+ Estimated 3.141593 in 0.344s with 100000000 steps and  4 threads
+ Estimated 3.141593 in 0.344s with 100000000 steps and  5 threads
+ Estimated 3.141593 in 0.312s with 100000000 steps and  6 threads
+ Estimated 3.141593 in 0.250s with 100000000 steps and  7 threads
+ Estimated 3.141593 in 0.250s with 100000000 steps and  8 threads
+ Estimated 3.141593 in 0.219s with 100000000 steps and  9 threads
+ Estimated 3.141593 in 0.250s with 100000000 steps and 10 threads
+ Estimated 3.141593 in 0.250s with 100000000 steps and 11 threads
+ Estimated 3.141593 in 0.203s with 100000000 steps and 12 threads
+ Estimated 3.141593 in 0.203s with 100000000 steps and 13 threads
+ Estimated 3.141593 in 0.187s with 100000000 steps and 14 threads
+ Estimated 3.141593 in 0.235s with 100000000 steps and 15 threads
+ Estimated 3.141593 in 0.218s with 100000000 steps and 16 threads
+
+ The extra padding introduces by the second dimension causes extra padding in the cache.
+ Due to this cache invalidation no longer occurs, making the program a lot faster.
+
+ ===Task 3 ===
+ Estimated 3.141593 in 0.594s with 100000000 steps and  1 threads
+ Estimated 3.141593 in 0.375s with 100000000 steps and  2 threads
+ Estimated 3.141593 in 0.328s with 100000000 steps and  3 threads
+ Estimated 3.141593 in 0.266s with 100000000 steps and  4 threads
+ Estimated 3.141593 in 0.203s with 100000000 steps and  5 threads
+ Estimated 3.141593 in 0.203s with 100000000 steps and  6 threads
+ Estimated 3.141593 in 0.188s with 100000000 steps and  7 threads
+ Estimated 3.141593 in 0.171s with 100000000 steps and  8 threads
+ Estimated 3.141593 in 0.188s with 100000000 steps and  9 threads
+ Estimated 3.141593 in 0.156s with 100000000 steps and 10 threads
+ Estimated 3.141593 in 0.156s with 100000000 steps and 11 threads
+ Estimated 3.141593 in 0.157s with 100000000 steps and 12 threads
+ Estimated 3.141593 in 0.157s with 100000000 steps and 13 threads
+ Estimated 3.141593 in 0.140s with 100000000 steps and 14 threads
+ Estimated 3.141593 in 0.141s with 100000000 steps and 15 threads
+ Estimated 3.141593 in 0.172s with 100000000 steps and 16 threads
+ **/
