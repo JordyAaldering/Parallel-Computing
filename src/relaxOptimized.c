@@ -14,7 +14,7 @@
  */
 double* allocVector(int n) {
     double *v;
-    v = (double*) malloc(n * sizeof(double));
+    v = (double*)malloc(n * sizeof(double));
     return v;
 }
 
