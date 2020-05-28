@@ -53,7 +53,7 @@ int main() {
     init(old, N);
     init(new, N);
 
-    printf("size   : %d M (%d MB)\n", N / 1000000, (int) (N * sizeof(double) / (1024 * 1024)));
+    printf("size   : %d M (%d MB)\n", N / 1000000, (int)(N * sizeof(double) / (1024 * 1024)));
     printf("heat   : %f\n", HEAT);
     printf("epsilon: %f\n", EPS);
 
