@@ -4,9 +4,9 @@
 #include <math.h>
 #include <time.h>
 
-#define N 10000000  // length of the vectors
-#define EPS 0.1     // convergence criterium
+#define N 500000  // length of the vectors
 #define HEAT 100.0  // heat value on the boundary
+#define EPS 0.1  // convergence criterium
 
 /**
  * allocate a vector of length "n"
@@ -25,12 +25,6 @@ void init(double *out, int n) {
     for (int i = 1; i < n; i++) {
         out[i] = 0;
     }
-}
-
-void swap(double *a, double *b) {
-    double tmp = *a;
-    *a = *b;
-    *b = tmp;
 }
 
 /**
@@ -72,6 +66,7 @@ int main() {
     int iterations = 0;
     double *a = allocVector(N);
     double *b = allocVector(N);
+    double *tmp;
 
     init(a, N);
     init(b, N);
@@ -80,13 +75,21 @@ int main() {
     printf("heat   : %f\n", HEAT);
     printf("epsilon: %f\n", EPS);
 
+    clock_t start = clock();
+
     do {
-        swap(a, b);
+        tmp = a;
+        a = b;
+        b = tmp;
+
         relax(a, b, N);
         // print(b, N);
         iterations++;
     } while (!isStable(a, b, N, EPS));
 
+    clock_t end = clock();
     printf("Number of iterations: %d\n", iterations);
+    printf("Done in %fs\n", (double)(end - start) / CLOCKS_PER_SEC);
+
     return 0;
 }
