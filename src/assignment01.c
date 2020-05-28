@@ -1,6 +1,3 @@
-#ifndef PARALLEL_COMPUTING_ASSIGNMENT01_H
-#define PARALLEL_COMPUTING_ASSIGNMENT01_H
-
 #include <omp.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -93,7 +90,7 @@ double estimatePi3(int steps, int threads) {
         printf("Estimated %.6f in %.3fs with %d steps and %2d threads\n", pi, elapsed, steps, threads); \
     } while (false);
 
-void runAssignment01() {
+int main() {
     int steps = 100000000;
     int maxThreads = 16;
 
@@ -112,8 +109,6 @@ void runAssignment01() {
         MEASURE_PERFORMANCE(estimatePi3, steps, i)
     }
 }
-
-#endif //PARALLEL_COMPUTING_ASSIGNMENT01_H
 
 /**
  === Task 1 ===
