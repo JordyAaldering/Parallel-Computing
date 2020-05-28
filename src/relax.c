@@ -4,9 +4,9 @@
 #include <math.h>
 #include <time.h>
 
-#define N 500000  // length of the vectors
+#define N 1000000   // length of the vectors
 #define HEAT 100.0  // heat value on the boundary
-#define EPS 0.1  // convergence criterium
+#define EPS 0.1     // convergence criterium
 
 /**
  * allocate a vector of length "n"
@@ -25,17 +25,6 @@ void init(double *out, int n) {
     for (int i = 1; i < n; i++) {
         out[i] = 0;
     }
-}
-
-/**
- * print the values of a given vector "out" of length "n"
- */
-void print(double *out, int n) {
-    printf("<");
-    for (int i = 0; i < n; i++) {
-        printf(" %f", out[i]);
-    }
-    printf(">\n");
 }
 
 /**
@@ -64,12 +53,12 @@ bool isStable(double *old, double *new, int n, double eps) {
 
 int main() {
     int iterations = 0;
-    double *a = allocVector(N);
-    double *b = allocVector(N);
+    double *old = allocVector(N);
+    double *new = allocVector(N);
     double *tmp;
 
-    init(a, N);
-    init(b, N);
+    init(old, N);
+    init(new, N);
 
     printf("size   : %d M (%d MB)\n", N / 1000000, (int) (N * sizeof(double) / (1024 * 1024)));
     printf("heat   : %f\n", HEAT);
@@ -78,14 +67,13 @@ int main() {
     clock_t start = clock();
 
     do {
-        tmp = a;
-        a = b;
-        b = tmp;
+        tmp = old;
+        old = new;
+        new = tmp;
 
-        relax(a, b, N);
-        // print(b, N);
+        relax(old, new, N);
         iterations++;
-    } while (!isStable(a, b, N, EPS));
+    } while (!isStable(old, new, N, EPS));
 
     clock_t end = clock();
     printf("Number of iterations: %d\n", iterations);

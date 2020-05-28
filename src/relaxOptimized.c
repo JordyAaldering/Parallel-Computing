@@ -5,9 +5,9 @@
 #include <math.h>
 #include <time.h>
 
-#define N 1000000  // length of the vectors
+#define N 1000000   // length of the vectors
 #define HEAT 100.0  // heat value on the boundary
-#define EPS 0.1  // convergence criterium
+#define EPS 0.1     // convergence criterium
 
 /**
  * allocate a vector of length "n"
@@ -45,8 +45,7 @@ bool relax(double *in, double *out, int n, double eps) {
 }
 
 int main() {
-    bool stable = true;
-    int iterations = 0;
+    int iterations = 1;
     double *old = allocVector(N);
     double *new = allocVector(N);
     double *tmp;
@@ -60,14 +59,13 @@ int main() {
 
     clock_t start = clock();
 
-    do {
+    while (!relax(old, new, N, EPS)) {
         tmp = old;
         old = new;
         new = tmp;
-
-        stable = relax(old, new, N, EPS);
+        
         iterations++;
-    } while (!stable);
+    }
 
     clock_t end = clock();
     printf("Number of iterations: %d\n", iterations);
