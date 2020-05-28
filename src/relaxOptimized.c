@@ -63,7 +63,7 @@ int main() {
         tmp = old;
         old = new;
         new = tmp;
-        
+
         iterations++;
     }
 
