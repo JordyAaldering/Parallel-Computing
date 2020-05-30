@@ -1,46 +1,23 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <math.h>
 #include <omp.h>
+#include "common.h"
 
-#define N 1000000   // length of the vectors
-#define HEAT 100.0  // heat value on the boundary
-#define EPS 0.1     // convergence criterium
-#define THREADS 8   // maximum number of threads
-
-#define ALLOCATE(size, type) (type*)malloc(size * sizeof(type))
-
-int min(int a, int b) {
-    return a < b ? a : b;
-}
-
-/**
- * initialise the values of the given vector "out" of length "n"
- */
 void init(double *out, int n) {
     memset(out, 0, n * sizeof(double));
     out[0] = HEAT;
 }
 
-/**
- * individual step of the 3-point stencil
- * computes values in vector "out" from those in vector "in"
- * assuming both are of length "n"
- */
-bool relax(double *in, double *out, bool *stable) {
+bool relax(double *in, double *out, bool *stable, int n, int maxThreads) {
     int i, id, threads, steps, start, end;
-    memset(stable, true, THREADS * sizeof(bool));
+    memset(stable, true, maxThreads * sizeof(bool));
 
     #pragma omp parallel private(i, id, threads, steps)
     {
         id = omp_get_thread_num();
         threads = omp_get_num_threads();
 
-        steps = ceil((double)N / threads);
+        steps = ceil((double)n / threads);
         start = id * steps + 1;
-        end = min(start + steps, N - 1);
+        end = min(start + steps, n - 1);
 
         for (i = start; i < end; i++) {
             out[i] = 0.25 * in[i - 1] + 0.5 * in[i] + 0.25 * in[i + 1];
@@ -51,7 +28,7 @@ bool relax(double *in, double *out, bool *stable) {
         }
     }
 
-    for (i = 0; i < THREADS; i++) {
+    for (i = 0; i < maxThreads; i++) {
         if (!stable[i]) {
             return false;
         }
@@ -60,22 +37,22 @@ bool relax(double *in, double *out, bool *stable) {
     return true;
 }
 
-int main() {
+void run(int n, int threads) {
     double *old, *new, *tmp;
     bool *stable;
 
-    old = ALLOCATE(N, double);
-    new = ALLOCATE(N, double);
-    stable = ALLOCATE(THREADS, bool);
+    old = ALLOCATE(double, n);
+    new = ALLOCATE(double, n);
+    stable = ALLOCATE(bool, threads);
 
-    init(old, N);
-    init(new, N);
+    init(old, n);
+    init(new, n);
 
     int iterations = 1;
     double start = omp_get_wtime();
-    omp_set_num_threads(THREADS);
+    omp_set_num_threads(threads);
 
-    while (!relax(old, new, stable)) {
+    while (!relax(old, new, stable, n, threads)) {
         tmp = old;
         old = new;
         new = tmp;
@@ -84,8 +61,18 @@ int main() {
     }
 
     double end = omp_get_wtime();
-    printf("Iterations: %d\n", iterations);
-    printf("Duration: %fs\n", end - start);
+    printf("%d, %f, %f, %d, %d, %f\n", n, HEAT, EPS, threads, iterations, end - start);
+}
+
+int main() {
+    printf("size, heat, eps, threads, iterations, duration\n");
+    for (int i = 1; i <= EVAL_STEPS; i++) {
+        for (int t = 1; t <= MAX_THREADS; t++) {
+            for (int r = 0; r < EVAL_REPEATS; r++) {
+                run(EVAL_START * i, t);
+            }
+        }
+    }
 
     return 0;
 }

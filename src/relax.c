@@ -1,14 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
 #include <time.h>
-
-#define N 1000000   // length of the vectors
-#define HEAT 100.0  // heat value on the boundary
-#define EPS 0.1     // convergence criterium
-
-#define ALLOCATE(type, size) (type*)malloc(size * sizeof(type))
+#include "common.h"
 
 /**
  * initialise the values of the given vector "out" of length "n"
@@ -25,8 +16,8 @@ void init(double *out, int n) {
  * computes values in vector "out" from those in vector "in"
  * assuming both are of length "n"
  */
-void relax(double *in, double *out) {
-    for (int i = 1; i < N - 1; i++) {
+void relax(double *in, double *out, int n) {
+    for (int i = 1; i < n - 1; i++) {
         out[i] = 0.25 * in[i - 1] + 0.5 * in[i] + 0.25 * in[i + 1];
     }
 }
@@ -35,22 +26,22 @@ void relax(double *in, double *out) {
  * checks the convergence criterion:
  * true, iff for all indices i, we have |out[i] - in[i]| <= eps
  */
-bool isStable(double *old, double *new) {
+bool isStable(double *old, double *new, int n) {
     bool res = true;
-    for (int i = 1; i < N - 1; i++) {
+    for (int i = 1; i < n - 1; i++) {
         res &= fabs(old[i] - new[i]) <= EPS;
     }
 
     return res;
 }
 
-int main() {
+void run(int n) {
     double *old, *new, *tmp;
-    old = ALLOCATE(double, N);
-    new = ALLOCATE(double, N);
+    old = ALLOCATE(double, n);
+    new = ALLOCATE(double, n);
 
-    init(old, N);
-    init(new, N);
+    init(old, n);
+    init(new, n);
 
     int iterations = 0;
     clock_t start = clock();
@@ -60,13 +51,22 @@ int main() {
         old = new;
         new = tmp;
 
-        relax(old, new);
+        relax(old, new, n);
         iterations++;
-    } while (!isStable(old, new));
+    } while (!isStable(old, new, n));
 
     clock_t end = clock();
-    printf("Iterations: %d\n", iterations);
-    printf("Duration: %fs\n", (double)(end - start) / CLOCKS_PER_SEC);
+    printf("%d, %f, %f, %d, %d, %f\n", n, HEAT, EPS, 1,
+            iterations, (double)(end - start) / CLOCKS_PER_SEC);
+}
+
+int main() {
+    printf("size, heat, eps, threads, iterations, duration\n");
+    for (int i = 1; i <= EVAL_STEPS; i++) {
+        for (int r = 0; r < EVAL_REPEATS; r++) {
+            run(EVAL_START * i);
+        }
+    }
 
     return 0;
 }
