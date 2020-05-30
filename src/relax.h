@@ -1,5 +1,5 @@
-#ifndef PARALLEL_COMPUTING_COMMON_H
-#define PARALLEL_COMPUTING_COMMON_H
+#ifndef PARALLEL_COMPUTING_RELAX_H
+#define PARALLEL_COMPUTING_RELAX_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,4 +21,4 @@ int min(int a, int b) {
     return a < b ? a : b;
 }
 
-#endif //PARALLEL_COMPUTING_COMMON_H
+#endif //PARALLEL_COMPUTING_RELAX_H

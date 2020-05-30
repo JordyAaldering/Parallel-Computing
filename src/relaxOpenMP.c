@@ -1,5 +1,5 @@
 #include <omp.h>
-#include "common.h"
+#include "relax.h"
 
 void init(double *out, int n) {
     memset(out, 0, n * sizeof(double));

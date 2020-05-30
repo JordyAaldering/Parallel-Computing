@@ -1,5 +1,5 @@
 #include <time.h>
-#include "common.h"
+#include "relax.h"
 
 /**
  * initialise the values of the given vector "out" of length "n"
