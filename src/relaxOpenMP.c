@@ -49,8 +49,8 @@ void run(int n, int threads) {
     init(new, n);
 
     int iterations = 1;
-    double start = omp_get_wtime();
     omp_set_num_threads(threads);
+    double start = omp_get_wtime();
 
     while (!relax(old, new, stable, n, threads)) {
         tmp = old;
@@ -61,11 +61,15 @@ void run(int n, int threads) {
     }
 
     double end = omp_get_wtime();
-    printf("%d, %f, %f, %d, %d, %f\n", n, HEAT, EPS, threads, iterations, end - start);
+    printf("%d,%f,%f,%d,%d,%f\n", n, HEAT, EPS,
+            threads, iterations, end - start);
+
+    free(old);
+    free(new);
 }
 
 int main() {
-    printf("size, heat, eps, threads, iterations, duration\n");
+    printf("size,heat,eps,threads,iterations,duration\n");
     for (int i = 1; i <= EVAL_STEPS; i++) {
         for (int t = 1; t <= MAX_THREADS; t++) {
             for (int r = 0; r < EVAL_REPEATS; r++) {

@@ -56,12 +56,15 @@ void run(int n) {
     } while (!isStable(old, new, n));
 
     clock_t end = clock();
-    printf("%d, %f, %f, %d, %d, %f\n", n, HEAT, EPS, 1,
+    printf("%d,%f,%f,%d,%d,%f\n", n, HEAT, EPS, 1,
             iterations, (double)(end - start) / CLOCKS_PER_SEC);
+
+    free(old);
+    free(new);
 }
 
 int main() {
-    printf("size, heat, eps, threads, iterations, duration\n");
+    printf("size,heat,eps,threads,iterations,duration\n");
     for (int i = 1; i <= EVAL_STEPS; i++) {
         for (int r = 0; r < EVAL_REPEATS; r++) {
             run(EVAL_START * i);

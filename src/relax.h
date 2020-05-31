@@ -7,13 +7,13 @@
 #include <string.h>
 #include <math.h>
 
-#define EVAL_START 1000000
-#define EVAL_STEPS 10
+#define EVAL_START 50000
+#define EVAL_STEPS 40
 #define EVAL_REPEATS 10
 #define MAX_THREADS 8
 
 #define HEAT 100.0
-#define EPS 0.1
+#define EPS 0.05
 
 #define ALLOCATE(type, size) (type*)malloc(size * sizeof(type))
 
