@@ -64,7 +64,7 @@ void run(int n) {
 }
 
 int main() {
-    printf("size,heat,eps,threads,iterations,duration\n");
+    printf("n,heat,eps,threads,iterations,duration\n");
     for (int i = 1; i <= EVAL_STEPS; i++) {
         for (int r = 0; r < EVAL_REPEATS; r++) {
             run(EVAL_START * i);
