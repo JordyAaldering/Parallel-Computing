@@ -1,4 +1,4 @@
-n,heat,eps,threads,iterations,duration
+size,heat,eps,threads,iterations,duration
 50000,100.000000,0.050000,1,484,0.109000
 50000,100.000000,0.050000,1,484,0.109000
 50000,100.000000,0.050000,1,484,0.110000
