@@ -61,19 +61,19 @@ char *getMemStr( size_t n)
   return buf;
 }
 
-char *getTimeStr( double time)
+char *getTimeStr( double ms)
 {
   static char buf[50];
   int min, sec;
   double msec;
 
-  min = (int)time/60000;
-  sec = (int)(time - (min*60000)) / 1000;
-  msec = time - (min*60000) - (sec*1000);
+  min = (int)ms / 60000;
+  sec = (int)(ms - (min * 60000)) / 1000;
+  msec = ms - (min * 60000) - (sec * 1000);
 
-  if (time >= 60000) {
+  if (ms >= 60000) {
     snprintf( buf, 49, "%d min %d sec %.1f msec", min, sec, msec);
-  } else if (time >=1000) {
+  } else if (ms >= 1000) {
     snprintf( buf, 49, "%d sec %.1f msec", sec, msec);
   } else {
     snprintf( buf, 49, "%.1f msec", msec);
@@ -81,15 +81,15 @@ char *getTimeStr( double time)
   return buf;
 }
 
-char *readOpenCL( char *fname)
+char *readOpenCL( char *fName)
 {
    FILE *f;
    long fsize;
    char *str;
 
-   f = fopen(fname, "r");
+   f = fopen(fName, "r");
    if (f==NULL)
-      die ( "Error: file \"%s\" not found!", fname);
+      die ("Error: file \"%s\" not found!", fName);
 
    fseek(f, 0, SEEK_END);
    fsize = ftell(f);
