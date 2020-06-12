@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <time.h>
 
-#include <CL/cl.h>
+#include "CL/cl.h"
 #include "simple.h"
 
 typedef struct {
