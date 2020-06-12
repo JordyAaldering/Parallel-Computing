@@ -4,4 +4,4 @@ project(parallel-computing C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -fopenmp")
 
-add_executable(relax project02/simple.c)
+add_executable(relax project02/relax.c project02/simple.c)
