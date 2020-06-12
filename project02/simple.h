@@ -95,21 +95,21 @@ extern cl_int initGPUVerbose();
  *  Note that this may go wrong as not all openCL implementations
  *  support this!
  */
-extern cl_int initCPU ();
+extern cl_int initCPU();
 
 /**
  * Triggers some additional information to be print to stdout
  * which documents what your code is trying to do.
  * We strongly recommend using this version during development.
  */
-extern cl_int initCPUVerbose ();
+extern cl_int initCPUVerbose();
 
 typedef enum {
-  DoubleArr,
-  FloatArr,
-  IntArr,
-  BoolArr,
-  IntConst
+    DoubleArr,
+    FloatArr,
+    IntArr,
+    BoolArr,
+    IntConst
 } clarg_type;
 
 /**
@@ -132,14 +132,14 @@ typedef enum {
  *   FloatArr::clarg_type, num_elems::int, pointer::float *,
  *   IntConst::clarg_type, number::int
  */
-extern cl_kernel setupKernel( const char *kernel_source, char *kernel_name, int num_args, ...);
+extern cl_kernel setupKernel(const char *kernel_source, char *kernel_name, int num_args, ...);
 
 /**
  * This routine is similar to launchKernel.
  * However, in addition to launching the kernel, it also copies back
  * *all* arguments set up by the previous call to setupKernel!
  */
-extern cl_int runKernel( cl_kernel kernel, int dim, size_t *global, size_t *local);
+extern cl_int runKernel(cl_kernel kernel, int dim, size_t *global, size_t *local);
 
 /**
  * This routine releases all acquired resources.
@@ -151,25 +151,31 @@ extern cl_int freeDevice();
 /**
  * Returns an openCL device memory identifier for device memory of "n" bytes.
  */
-extern cl_mem allocDev( size_t n);
+extern cl_mem allocDev(size_t n);
 
 /**
  * Transfers "n" elements of <type> of the array "a"
  * on the host to the device buffer at "ad".
  */
 extern void host2devDoubleArr(double *a, cl_mem ad, size_t n);
+
 extern void host2devFloatArr(float *a, cl_mem ad, size_t n);
+
 extern void host2devIntArr(int *a, cl_mem ad, size_t n);
+
 extern void host2devBoolArr(bool *a, cl_mem ad, size_t n);
 
 /**
  * Transfers "n" elements of the array "ad" of elements of
  * <type> on the device to the host buffer at "a".
  */
-extern void dev2hostDoubleArr( cl_mem ad, double *a, size_t n);
-extern void dev2hostFloatArr( cl_mem ad, float *a, size_t n);
-extern void dev2hostIntArr( cl_mem ad, int *a, size_t n);
-extern void dev2hostBoolArr( cl_mem ad, bool *a, size_t n);
+extern void dev2hostDoubleArr(cl_mem ad, double *a, size_t n);
+
+extern void dev2hostFloatArr(cl_mem ad, float *a, size_t n);
+
+extern void dev2hostIntArr(cl_mem ad, int *a, size_t n);
+
+extern void dev2hostBoolArr(cl_mem ad, bool *a, size_t n);
 
 /**
  * This routine creates a kernel from the source as string.
@@ -204,12 +210,13 @@ extern cl_int launchKernel(cl_kernel kernel, int dim, size_t *global, size_t *lo
  * call to printKernelTime!
  */
 extern void printKernelTime();
+
 extern void printTransferTimes();
 
 /**
  * Returns the maximum number of work items per work group of the selected
  * device in dimension dim. It requires dim to be in {0, 1, 2}.
  */
-extern size_t maxWorkItems (int dim);
+extern size_t maxWorkItems(int dim);
 
 #endif /* SIMPLE_H_ */
