@@ -11,7 +11,7 @@ extern char *getMemStr(size_t bytes);
  * Returns a string in a static buffer that represents the time
  * provided ms in a human readable form (min, sec, ms).
  */
-extern char *getTimeStr(double ms);
+extern char *getTimeStr(double time);
 
 /**
  * Reads file with name "fName" into a freshly allocated string.
