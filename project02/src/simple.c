@@ -285,15 +285,15 @@ cl_mem allocDev(size_t n) {
 #define H2D(tName, t)                                                       \
 void host2dev ##tName ##Arr(t *a, cl_mem ad, size_t n) {                    \
     cl_int err = CL_SUCCESS;                                                \
-    clock_gettime( CLOCK_REALTIME, &start);                                 \
+    clock_gettime(CLOCK_REALTIME, &start);                                  \
     if (verbose) {                                                          \
         printf( "transferring %s to device\n", getMemStr( sizeof (t) * n)); \
     }                                                                       \
                                                                             \
     err = clEnqueueWriteBuffer(commands, ad, CL_TRUE, 0,                    \
                         sizeof (t) * n, a, 0, NULL, NULL);                  \
-    if( CL_SUCCESS != err) {                                                \
-        DIE("Error: Failed to transfer from host to device!");             \
+    if(CL_SUCCESS != err) {                                                 \
+        DIE("Error: Failed to transfer from host to device!");              \
     }                                                                       \
                                                                             \
     clock_gettime(CLOCK_REALTIME, &stop);                                   \
@@ -321,7 +321,7 @@ void dev2host ##tName ##Arr( cl_mem ad, t* a, size_t n) {                   \
     err = clEnqueueReadBuffer(commands, ad, CL_TRUE, 0,                     \
                         sizeof (t) * n, a, 0, NULL, NULL);                  \
     if( CL_SUCCESS != err) {                                                \
-        DIE("Error: Failed to transfer from device to host!");             \
+        DIE("Error: Failed to transfer from device to host!");              \
     }                                                                       \
                                                                             \
     clock_gettime( CLOCK_REALTIME, &stop);                                  \
@@ -369,17 +369,17 @@ cl_kernel createKernel(const char *kernel_source, char *kernel_name) {
     return kernel;
 }
 
-#define SETUP_ARG(tName, t)                                                      \
+#define SETUP_ARG(tName, t)                                                     \
 case tName ## Arr:                                                              \
-    kernel_args[i].num_elements = va_arg(ap, int);                                 \
+    kernel_args[i].num_elements = va_arg(ap, int);                              \
     kernel_args[i].t##_host_buf = va_arg(ap, t*);                               \
-    kernel_args[i].dev_buf = allocDev(sizeof(t) * kernel_args[i].num_elements);    \
+    kernel_args[i].dev_buf = allocDev(sizeof(t) * kernel_args[i].num_elements); \
     host2dev ## tName ## Arr(kernel_args[i].t##_host_buf,                       \
-                        kernel_args[i].dev_buf, kernel_args[i].num_elements);      \
+                        kernel_args[i].dev_buf, kernel_args[i].num_elements);   \
     err = clSetKernelArg (kernel, i, sizeof (cl_mem), &kernel_args[i].dev_buf); \
                                                                                 \
     if(CL_SUCCESS != err) {                                                     \
-        DIE("Error: Failed to set kernel arg %d!", i);                         \
+        DIE("Error: Failed to set kernel arg %d!", i);                          \
         kernel = NULL;                                                          \
     }                                                                           \
     break;
@@ -467,7 +467,7 @@ cl_int launchKernel(cl_kernel kernel, int dim, size_t *global, size_t *local) {
 case tName ## Arr:                                          \
     dev2host ## tName ## Arr(kernel_args[i].dev_buf,        \
                              kernel_args[i].t ## _host_buf, \
-                             kernel_args[i].num_elements);     \
+                             kernel_args[i].num_elements);  \
     break;
 
 cl_int runKernel(cl_kernel kernel, int dim, size_t *global, size_t *local) {
