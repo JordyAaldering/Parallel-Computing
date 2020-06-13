@@ -1,5 +1,8 @@
-#ifndef SIMPLE_H_
-#define SIMPLE_H_
+#ifndef SIMPLE_H
+#define SIMPLE_H
+
+#include <stdbool.h>
+#include "CL/cl.h"
 
 /**
  * Returns a string in a static buffer that represents the memory
@@ -219,4 +222,4 @@ extern void printTransferTimes();
  */
 extern size_t maxWorkItems(int dim);
 
-#endif /* SIMPLE_H_ */
+#endif /* SIMPLE_H */

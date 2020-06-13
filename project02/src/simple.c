@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <stdbool.h>
 #include <time.h>
 
-#include "CL/cl.h"
 #include "simple.h"
 
 typedef struct {
@@ -14,7 +12,7 @@ typedef struct {
     float *float_host_buf;
     int *int_host_buf;
     bool *bool_host_buf;
-    int num_elems;
+    int num_elements;
     int val;
 } kernel_arg;
 
@@ -373,11 +371,11 @@ cl_kernel createKernel(const char *kernel_source, char *kernel_name) {
 
 #define SETUP_ARG(tName, t)                                                      \
 case tName ## Arr:                                                              \
-    kernel_args[i].num_elems = va_arg(ap, int);                                 \
+    kernel_args[i].num_elements = va_arg(ap, int);                                 \
     kernel_args[i].t##_host_buf = va_arg(ap, t*);                               \
-    kernel_args[i].dev_buf = allocDev(sizeof(t) * kernel_args[i].num_elems);    \
+    kernel_args[i].dev_buf = allocDev(sizeof(t) * kernel_args[i].num_elements);    \
     host2dev ## tName ## Arr(kernel_args[i].t##_host_buf,                       \
-                        kernel_args[i].dev_buf, kernel_args[i].num_elems);      \
+                        kernel_args[i].dev_buf, kernel_args[i].num_elements);      \
     err = clSetKernelArg (kernel, i, sizeof (cl_mem), &kernel_args[i].dev_buf); \
                                                                                 \
     if(CL_SUCCESS != err) {                                                     \
@@ -469,7 +467,7 @@ cl_int launchKernel(cl_kernel kernel, int dim, size_t *global, size_t *local) {
 case tName ## Arr:                                          \
     dev2host ## tName ## Arr(kernel_args[i].dev_buf,        \
                              kernel_args[i].t ## _host_buf, \
-                             kernel_args[i].num_elems);     \
+                             kernel_args[i].num_elements);     \
     break;
 
 cl_int runKernel(cl_kernel kernel, int dim, size_t *global, size_t *local) {
@@ -492,12 +490,12 @@ cl_int runKernel(cl_kernel kernel, int dim, size_t *global, size_t *local) {
 }
 
 void printKernelTime() {
-    printf("total time spent in %d kernel executions: %s\n", num_kernel, getTimeStr(kernel_time));
+    printf("Total time spent in %d kernel executions: %s\n", num_kernel, getTimeStr(kernel_time));
 }
 
 void printTransferTimes() {
-    printf("total time spent in %d host to device transfers : %s\n", num_h2d, getTimeStr(h2d_time));
-    printf("total time spent in %d device to host transfers : %s\n", num_d2h, getTimeStr(d2h_time));
+    printf("Total time spent in %d host to device transfers: %s\n", num_h2d, getTimeStr(h2d_time));
+    printf("Total time spent in %d device to host transfers: %s\n", num_d2h, getTimeStr(d2h_time));
 }
 
 cl_int freeDevice() {
