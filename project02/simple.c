@@ -303,39 +303,33 @@ void host2dev ##tName ##Arr(t *a, cl_mem ad, size_t n) {                    \
 }
 
 H2D(Double, double)
-
 H2D(Float, float)
-
 H2D(Int, int)
-
 H2D(Bool, bool)
 
 #define D2H(tName, t)                                                       \
-void dev2host ##tName ##Arr( cl_mem ad, t* a, size_t n) {                   \
+void dev2host ##tName ##Arr(cl_mem ad, t* a, size_t n) {                    \
     cl_int err = CL_SUCCESS;                                                \
-    clock_gettime( CLOCK_REALTIME, &start);                                 \
+    clock_gettime(CLOCK_REALTIME, &start);                                  \
     if (verbose) {                                                          \
-        printf( "transferring %s to host\n", getMemStr( sizeof (t) * n));   \
+        printf("transferring %s to host\n", getMemStr( sizeof (t) * n));    \
     }                                                                       \
                                                                             \
     err = clEnqueueReadBuffer(commands, ad, CL_TRUE, 0,                     \
-                        sizeof (t) * n, a, 0, NULL, NULL);                  \
-    if( CL_SUCCESS != err) {                                                \
+                        sizeof(t) * n, a, 0, NULL, NULL);                   \
+    if(err != CL_SUCCESS) {                                                 \
         DIE("Error: Failed to transfer from device to host!");              \
     }                                                                       \
                                                                             \
-    clock_gettime( CLOCK_REALTIME, &stop);                                  \
+    clock_gettime(CLOCK_REALTIME, &stop);                                   \
     num_d2h++;                                                              \
     d2h_time += (stop.tv_sec - start.tv_sec) * 1000.0                       \
         + (stop.tv_nsec - start.tv_nsec) / 1000000.0;                       \
 }
 
 D2H(Double, double)
-
 D2H(Float, float)
-
 D2H(Int, int)
-
 D2H(Bool, bool)
 
 cl_kernel createKernel(const char *kernel_source, char *kernel_name) {
@@ -480,6 +474,11 @@ cl_int runKernel(cl_kernel kernel, int dim, size_t *global, size_t *local) {
             FETCH(Float, float)
             FETCH(Int, int)
             FETCH(Bool, bool)
+            case IntConst: // TODO: This probably doesn't work.
+                dev2hostIntArr(kernel_args[i].dev_buf,
+                        kernel_args[i].int_host_buf,
+                        kernel_args[i].num_elements);
+                break;
             default:
                 kernel = NULL;
                 DIE("Error: illegal argument tag in runKernel!");
