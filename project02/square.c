@@ -58,20 +58,19 @@ int main(int argc, char *argv[]) {
     int count = DATA_SIZE;
     global[0] = count;
 
-    data = (float *) malloc(count * sizeof(float));
-    results = (float *) malloc(count * sizeof(float));
+    data = (float*)malloc(count * sizeof(float));
+    results = (float*)malloc(count * sizeof(float));
 
     /* Fill the vector with random float values.  */
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < count; i++) {
         data[i] = rand() / (float) RAND_MAX;
-
+    }
 
     err = initGPU();
 
     if (err == CL_SUCCESS) {
         kernel = setupKernel(KernelSource, "square", 3, FloatArr, count, data,
-                             FloatArr, count, results,
-                             IntConst, count);
+                             FloatArr, count, results, IntConst, count);
 
         runKernel(kernel, 1, global, local);
 
