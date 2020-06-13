@@ -82,9 +82,11 @@ int main(int argc, char *argv[]) {
 
         /* Validate our results.  */
         correct = 0;
-        for (int i = 0; i < count; i++)
-            if (results[i] == data[i] * data[i])
+        for (int i = 0; i < count; i++) {
+            if (results[i] == data[i] * data[i]) {
                 correct++;
+            }
+        }
 
         /* Print a brief summary detailing the results.  */
         printf("Computed %d/%d %2.0f%% correct values\n", correct, count,

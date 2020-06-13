@@ -24,7 +24,7 @@ typedef struct {
   exit(EXIT_FAILURE);                         \
 } while (false)
 
-static bool verbose = false;
+static bool verbose = true;
 static cl_platform_id cpPlatform;   /* openCL platform. */
 static cl_device_id device_id;      /* Compute device id. */
 static cl_context context;          /* Compute context. */
