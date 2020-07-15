@@ -1,9 +1,15 @@
 # IDE generated files
+.vs/
 .idea/
 .ipynb_checkpoints/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
 
-# Prerequisites
-*.d
+# Compiled files
+[Bb]in/
+[Dd]ebug/
 
 # Object files
 *.o
