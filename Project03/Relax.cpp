@@ -1,9 +1,12 @@
 #include "Util.h"
+#include <stdio.h>
+#include <fstream>
 #include <math.h>
+#include <time.h>
 
 #define N 1000
-#define HEAT 100.0
-#define EPS 0.1
+#define HEAT 400.0
+#define EPS 0.05
 
 void Diffuse(double* in, double* out, size_t n, size_t i, size_t j) {
     out[i * n + j] = 0.25 * in[i * n + j] // center
@@ -33,7 +36,9 @@ bool Relax(double* in, double* out, size_t n, double eps) {
     return stable;
 }
 
-void run(size_t n, double heat, double eps) {
+void run(std::ofstream& file, size_t n, double heat, double eps) {
+    clock_t start = clock();
+
     double* a = Util::CreateMatrix(n, heat);
     double* b = Util::CreateMatrix(n, heat);
     double* tmp;
@@ -46,10 +51,26 @@ void run(size_t n, double heat, double eps) {
         iterations++;
     }
 
-    Util::PrintInfo(n, heat, eps, iterations);
+    clock_t end = clock();
+    Util::PrintInfo(n, heat, eps, iterations, start, end);
+    Util::WriteInfo(file, n, iterations, start, end);
 }
 
 int main(int argc, char** argv) {
-    run(N, HEAT, EPS);
+    std::ofstream file;
+    std::string filename = "Evaluation/relax.csv";
+    
+    file.open(filename, std::fstream::app);
+    if (!file.is_open()) {
+        printf("Could not open file %s.", filename);
+        return 1;
+    }
+
+    for (int i = 1; i < 10; i++) {
+        run(file, i * N, HEAT, EPS);
+        printf("\n");
+    }
+
+    file.close();
     return 0;
 }
