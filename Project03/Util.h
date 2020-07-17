@@ -24,7 +24,7 @@ public:
         printf("Heat      : %f\n", heat);
         printf("Epsilon   : %f\n", eps);
         printf("Iterations: %d\n", iterations);
-        printf("Time      : %dms\n", (int)((end - start) / (CLOCKS_PER_SEC / 1000)));
+        printf("Time      : %dms\n", (int)((end - start) / (CLOCKS_PER_SEC / 1000.0)));
     }
 
     /// <summary> Write information about the program. </summary>

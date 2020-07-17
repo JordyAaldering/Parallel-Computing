@@ -4,7 +4,7 @@
 #include <math.h>
 #include <time.h>
 
-#define N 1000
+#define N 7000
 #define HEAT 400.0
 #define EPS 0.05
 
@@ -55,8 +55,9 @@ void run(std::ofstream& file, size_t n, double heat, double eps) {
     free(a);
     free(b);
 
-    Util::PrintInfo(n, heat, eps, iterations, start, end);
     Util::WriteInfo(file, n, iterations, start, end);
+    Util::PrintInfo(n, heat, eps, iterations, start, end);
+    // printf("\n");
 }
 
 int main(int argc, char** argv) {
@@ -69,9 +70,10 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    for (int i = 1; i < 3; i++) {
-        run(file, i * N, HEAT, EPS);
-        printf("\n");
+    for (int i = 1; i < 2; i++) {
+        for (int r = 0; r < 1; r++) {
+            run(file, i * N, HEAT, EPS);
+        }
     }
 
     file.close();
