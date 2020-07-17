@@ -1,20 +1,26 @@
-#include "Util.h"
-#include <stdio.h>
-#include <fstream>
-#include <math.h>
+#include "Shared.h"
 #include <time.h>
 
-/// <summary>
-/// Individual step of the 5-point stencil.
-/// Computes values in matrix 'out' from those in matrix 'in'.
-/// </summary>
+/// <summary> Print information about the program. </summary>
+static void PrintMatrix(int n, double heat, double eps, int iterations, clock_t start, clock_t end) {
+    printf("N         : %d\n", n);
+    printf("Size      : %dMB\n", (int)(n * n * sizeof(double) / (1024 * 1024)));
+    printf("Heat      : %f\n", heat);
+    printf("Epsilon   : %f\n", eps);
+    printf("Iterations: %d\n", iterations);
+    printf("Time      : %dms\n", (int)((end - start) / (CLOCKS_PER_SEC / 1000.0)));
+    printf("\n");
+}
+
+/// <summary> Individual step of the 5-point stencil.
+/// Computes values in matrix 'out' from those in matrix 'in'. </summary>
 /// <param name="in">A matrix size 'n by n'.</param>
 /// <param name="out">A matrix size 'n by n'.</param>
-bool Relax(double* in, double* out, size_t n, double eps) {
+static bool Relax(double* in, double* out, size_t n, double eps) {
     bool stable = true;
     for (size_t i = n + 1; i < n * (n - 2); i += 3) {
         for (size_t r = 0; r < n - 1; r++, i++) {
-            Util::Diffuse(in, out, n, i);
+            Shared::Diffuse(in, out, n, i);
             if (stable && fabs(in[i] - out[i]) > eps) {
                 stable = false;
             }
@@ -24,27 +30,27 @@ bool Relax(double* in, double* out, size_t n, double eps) {
     return stable;
 }
 
-void Run(std::ofstream& file, size_t n, double heat, double eps) {
+static void Run(std::ofstream& file, size_t n, double heat, double eps) {
     clock_t start = clock();
 
-    double* a = Util::CreateMatrix(n, heat);
-    double* b = Util::CreateMatrix(n, heat);
+    double* in = Shared::CreateMatrix(n * n, n / 2, heat);
+    double* out = Shared::CreateMatrix(n * n, n / 2, heat);
     double* tmp;
     int iterations = 1;
 
-    while (!Relax(a, b, n, eps)) {
-        tmp = a;
-        a = b;
-        b = tmp;
+    while (!Relax(in, out, n, eps)) {
+        tmp = in;
+        in = out;
+        out = tmp;
         iterations++;
     }
 
     clock_t end = clock();
-    free(a);
-    free(b);
+    free(in);
+    free(out);
 
-    Util::WriteInfo(file, n, iterations, start, end);
-    Util::PrintInfo(n, heat, eps, iterations, start, end);
+    Shared::WriteInfo(file, n, iterations, (int)((end - start) / (CLOCKS_PER_SEC / 1000.0)));
+    PrintMatrix(n, heat, eps, iterations, start, end);
 }
 
 int main2() {
@@ -55,12 +61,8 @@ int main2() {
         return 1;
     }
 
-    Run(file, N, HEAT, EPS);
-    file.close();
-    return 0;
-
-    for (int i = 44; i <= 50; i++) {
-        for (int r = 0; r < 10; r++) {
+    for (int i = 1; i <= 50; i++) {
+        for (int r = 0; r < 5; r++) {
             Run(file, i * N, HEAT, EPS);
         }
     }

@@ -1,16 +1,13 @@
-#include "Util.h"
+#include "Shared.h"
 #include <mpi.h>
-#include <stdio.h>
-#include <fstream>
-#include <math.h>
-#include <time.h>
 
-void PrintInfo(int rank, int worldSize, int arraySize, int n, double heat, double eps, int iterations, double start, double end) {
+/// <summary> Print information about the program. </summary>
+static void PrintBlock(int rank, int worldSize, int arraySize, int n, double heat, double eps, int iterations, double start, double end) {
     printf("Rank      : %d\n", rank);
     printf("World     : %d\n", worldSize);
     printf("N         : %d\n", n);
     printf("Block     : %d\n", arraySize);
-    printf("Size      : %dMB\n", (int)(n * n * sizeof(double) / (1024 * 1024)));
+    printf("Size      : %dMB\n", (int)(arraySize * arraySize * sizeof(double) / (1024 * 1024)));
     printf("Heat      : %f\n", heat);
     printf("Epsilon   : %f\n", eps);
     printf("Iterations: %d\n", iterations);
@@ -18,31 +15,21 @@ void PrintInfo(int rank, int worldSize, int arraySize, int n, double heat, doubl
     printf("\n");
 }
 
-double* CreateBlock(size_t n, size_t arraySize, int rank, double heat) {
-    double* m = (double*)calloc(arraySize, sizeof(double));
-    if (rank == 0) { // set center of top row
-        m[n / 2] = heat;
-    }
-    return m;
-}
-
-bool Relax(double* in, double* out, size_t n, size_t arraySize, double eps) {
+static bool Relax(double* in, double* out, size_t n, size_t arraySize, double eps) {
     bool stable = true;
-    for (size_t i = n + 1; i < arraySize - n - n + 2; i += 3) {
+    for (size_t i = n + 1; i < arraySize - n - n; i += 3) {
         for (size_t r = 0; r < n - 1; r++, i++) {
-            Util::Diffuse(in, out, n, i);
+            Shared::Diffuse(in, out, n, i);
             if (stable && fabs(in[i] - out[i]) > eps) {
-                // printf("In[%d]: %f, out[%d]: %f\n", i, in[i], i, out[i]);
                 stable = false;
             }
         }
     }
 
-    // if (stable) printf("Stable\n");
     return stable;
 }
 
-void SendRecvBottomRow(int rank, int worldSize, size_t n, size_t arraySize, double* out) {
+static void SendRecvBottomRow(int rank, int worldSize, size_t n, size_t arraySize, double* out) {
     if (rank % 2 == 0) {
         if (rank < worldSize - 1) {
             // printf("Process %d sending bottom row.\n", rank);
@@ -64,7 +51,7 @@ void SendRecvBottomRow(int rank, int worldSize, size_t n, size_t arraySize, doub
     }
 }
 
-void SendRecvTopRow(int rank, int worldSize, size_t n, size_t arraySize, double* out) {
+static void SendRecvTopRow(int rank, int worldSize, size_t n, size_t arraySize, double* out) {
     if (rank % 2 == 0) {
         if (rank > 0) {
             // printf("Process %d sending top row.\n", rank);
@@ -86,7 +73,7 @@ void SendRecvTopRow(int rank, int worldSize, size_t n, size_t arraySize, double*
     }
 }
 
-void Run(int argc, char** argv, std::ofstream& file, size_t n, double heat, double eps) {
+static void Run(int argc, char** argv, std::ofstream& file, size_t n, double heat, double eps) {
     MPI_Init(&argc, &argv);
     double start = MPI_Wtime();
 
@@ -104,16 +91,14 @@ void Run(int argc, char** argv, std::ofstream& file, size_t n, double heat, doub
         arraySize += (n % worldSize) * n;
     }
 
-    double* in = CreateBlock(n, arraySize, rank, heat);
-    double* out = CreateBlock(n, arraySize, rank, heat);
+    double* in = Shared::CreateMatrix(arraySize, rank == 0 ? n / 2 : -1, heat);
+    double* out = Shared::CreateMatrix(arraySize, rank == 0 ? n / 2 : -1, heat);
     double* tmp;
     int iterations = 1;
 
     bool global_stable;
     while (true) {
         bool local_stable = Relax(in, out, n, arraySize, eps);
-
-        // continue as long as any process is not stable
         MPI_Allreduce(&local_stable, &global_stable, 1, MPI_C_BOOL, MPI_LAND, MPI_COMM_WORLD);
         if (global_stable) {
             break;
@@ -130,8 +115,11 @@ void Run(int argc, char** argv, std::ofstream& file, size_t n, double heat, doub
 
     double end = MPI_Wtime();
     MPI_Finalize();
+    free(in);
+    free(out);
 
-    PrintInfo(rank, worldSize, arraySize, n, heat, eps, iterations, start, end);
+    Shared::WriteInfo(file, n, iterations, (int)((end - start) * 1000.0));
+    PrintBlock(rank, worldSize, arraySize, n, heat, eps, iterations, start, end);
 }
 
 int main(int argc, char** argv) {
@@ -142,8 +130,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    for (int i = 1; i <= 1; i++) {
-        for (int r = 0; r < 1; r++) {
+    for (int i = 1; i <= 50; i++) {
+        for (int r = 0; r < 5; r++) {
             Run(argc, argv, file, i * N, HEAT, EPS);
         }
     }
