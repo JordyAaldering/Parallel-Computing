@@ -6,6 +6,11 @@
 #include <memory>
 
 class Util {
+
+#define N 100
+#define HEAT 400.0
+#define EPS 0.05
+
 public:
     /// <summary>
     /// Allocate a flattened matrix of 'n by n' elements.
@@ -25,6 +30,7 @@ public:
         printf("Epsilon   : %f\n", eps);
         printf("Iterations: %d\n", iterations);
         printf("Time      : %dms\n", (int)((end - start) / (CLOCKS_PER_SEC / 1000.0)));
+        printf("\n");
     }
 
     /// <summary> Write information about the program. </summary>
@@ -43,4 +49,5 @@ public:
             printf(" |\n");
         }
     }
+
 };

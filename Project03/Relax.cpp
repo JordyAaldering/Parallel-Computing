@@ -4,10 +4,6 @@
 #include <math.h>
 #include <time.h>
 
-#define N 7000
-#define HEAT 400.0
-#define EPS 0.05
-
 void Diffuse(double* in, double* out, size_t n, size_t i, size_t j) {
     out[i * n + j] = 0.25 * in[i * n + j] // center
         + 0.250 * in[(i - 1) * n + j]     // upper
@@ -36,7 +32,7 @@ bool Relax(double* in, double* out, size_t n, double eps) {
     return stable;
 }
 
-void run(std::ofstream& file, size_t n, double heat, double eps) {
+void Run(std::ofstream& file, size_t n, double heat, double eps) {
     clock_t start = clock();
 
     double* a = Util::CreateMatrix(n, heat);
@@ -57,10 +53,9 @@ void run(std::ofstream& file, size_t n, double heat, double eps) {
 
     Util::WriteInfo(file, n, iterations, start, end);
     Util::PrintInfo(n, heat, eps, iterations, start, end);
-    // printf("\n");
 }
 
-int main(int argc, char** argv) {
+int main2() {
     std::ofstream file;
     std::string filename = "Evaluation/relax.csv";
     
@@ -70,9 +65,9 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    for (int i = 1; i < 2; i++) {
-        for (int r = 0; r < 1; r++) {
-            run(file, i * N, HEAT, EPS);
+    for (int i = 44; i <= 50; i++) {
+        for (int r = 0; r < 10; r++) {
+            Run(file, i * N, HEAT, EPS);
         }
     }
 

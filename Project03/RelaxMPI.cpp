@@ -1,25 +1,112 @@
-#include <stdio.h>
+#include "Util.h"
 #include <mpi.h>
+#include <stdio.h>
+#include <fstream>
+#include <math.h>
+#include <time.h>
 
-// mpiexec -n 8 "D:\Documents\Parallel-Computing\Project03\Debug\Project03.exe"
-int main2(int argc, char** argv) {
-    int rank, size;
-    double start, end;
+void PrintInfo(int rank, int worldSize, int arraySize, int n, double heat, double eps, int iterations, double start, double end) {
+    printf("Rank      : %d\n", rank);
+    printf("World     : %d\n", worldSize);
+    printf("N         : %d\n", n);
+    printf("Block     : %d\n", arraySize);
+    printf("Size      : %dMB\n", (int)(n * n * sizeof(double) / (1024 * 1024)));
+    printf("Heat      : %f\n", heat);
+    printf("Epsilon   : %f\n", eps);
+    printf("Iterations: %d\n", iterations);
+    printf("Time      : %dms\n", (int)((end - start) / (CLOCKS_PER_SEC / 1000.0)));
+    printf("\n");
+}
 
-    MPI_Init(&argc, &argv);
-    start = MPI_Wtime();
-
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    printf("Rank %d of %d processors.\n", rank, size);
-
-    end = MPI_Wtime();
-    MPI_Finalize();
-
+double* CreateBlock(size_t n, size_t arraySize, int rank, double heat) {
+    double* m = (double*)calloc(arraySize, sizeof(double));
     if (rank == 0) {
-        printf("Finished in %fs.\n", end - start);
+        // set center of top row
+        m[n / 2] = heat;
+    }
+    return m;
+}
+
+void Diffuse(double* in, double* out, size_t n, size_t i) {
+    out[i] = 0.25 * in[i]    // center
+        + 0.250 * in[i - n]  // upper
+        + 0.125 * in[i + n]  // lower
+        + 0.175 * in[i - 1]  // left
+        + 0.200 * in[i + 1]; // right
+}
+
+bool Relax(double* in, double* out, size_t n, size_t arraySize, double eps) {
+    bool stable = true;
+    for (size_t i = n + 1; i < arraySize - n - 1; i += 3) {
+        for (size_t rowOffset = 0; rowOffset < n - 2; rowOffset++, i++) {
+            Diffuse(in, out, n, i);
+            if (stable && fabs(in[i] - out[i]) > eps) {
+                stable = false;
+            }
+        }
     }
 
+    return stable;
+}
+
+void Run(int argc, char** argv, std::ofstream& file, size_t n, double heat, double eps) {
+    MPI_Init(&argc, &argv);
+    double start = MPI_Wtime();
+
+    int rank, worldSize;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &worldSize);
+
+    size_t arraySize = (n / worldSize) * n;
+    if (rank != 0) {
+        // share top row
+        arraySize += n;
+    }
+    if (rank != worldSize - 1) {
+        // share bottom row
+        arraySize += n;
+    } else {
+        // add remainder
+        arraySize += (n % worldSize) * n;
+    }
+
+    printf("%d %d\n", rank, arraySize);
+
+    double* a = CreateBlock(n, arraySize, rank, heat);
+    double* b = CreateBlock(n, arraySize, rank, heat);
+    double* tmp;
+    int iterations = 1;
+
+    while (!Relax(a, b, n, arraySize, eps)) {
+        tmp = a;
+        a = b;
+        b = tmp;
+        iterations++;
+        
+    }
+
+    double end = MPI_Wtime();
+    MPI_Finalize();
+
+    PrintInfo(rank, worldSize, arraySize, n, heat, eps, iterations, start, end);
+}
+
+int main(int argc, char** argv) {
+    std::ofstream file;
+    std::string filename = "Evaluation/mpi.csv";
+
+    file.open(filename, std::fstream::app);
+    if (!file.is_open()) {
+        printf("Could not open file %s.", filename);
+        return 1;
+    }
+
+    for (int i = 1; i <= 1; i++) {
+        for (int r = 0; r < 1; r++) {
+            Run(argc, argv, file, i * N, HEAT, EPS);
+        }
+    }
+
+    file.close();
     return 0;
 }
