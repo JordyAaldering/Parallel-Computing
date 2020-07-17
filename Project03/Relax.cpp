@@ -4,14 +4,6 @@
 #include <math.h>
 #include <time.h>
 
-void Diffuse(double* in, double* out, size_t n, size_t i, size_t j) {
-    out[i * n + j] = 0.25 * in[i * n + j] // center
-        + 0.250 * in[(i - 1) * n + j]     // upper
-        + 0.125 * in[(i + 1) * n + j]     // lower
-        + 0.175 * in[i * n + (j - 1)]     // left
-        + 0.200 * in[i * n + (j + 1)];    // right
-}
-
 /// <summary>
 /// Individual step of the 5-point stencil.
 /// Computes values in matrix 'out' from those in matrix 'in'.
@@ -20,10 +12,10 @@ void Diffuse(double* in, double* out, size_t n, size_t i, size_t j) {
 /// <param name="out">A matrix size 'n by n'.</param>
 bool Relax(double* in, double* out, size_t n, double eps) {
     bool stable = true;
-    for (size_t i = 1; i < n - 1; i++) {
-        for (size_t j = 1; j < n - 1; j++) {
-            Diffuse(in, out, n, i, j);
-            if (stable && fabs(in[i * n + j] - out[i * n + j]) > eps) {
+    for (size_t i = n + 1; i < n * (n - 2); i += 3) {
+        for (size_t r = 0; r < n - 1; r++, i++) {
+            Util::Diffuse(in, out, n, i);
+            if (stable && fabs(in[i] - out[i]) > eps) {
                 stable = false;
             }
         }
@@ -57,13 +49,15 @@ void Run(std::ofstream& file, size_t n, double heat, double eps) {
 
 int main2() {
     std::ofstream file;
-    std::string filename = "Evaluation/relax.csv";
-    
-    file.open(filename, std::fstream::app);
+    file.open("Evaluation/relax.csv");
     if (!file.is_open()) {
-        printf("Could not open file %s.", filename);
+        printf("Could not open file.");
         return 1;
     }
+
+    Run(file, N, HEAT, EPS);
+    file.close();
+    return 0;
 
     for (int i = 44; i <= 50; i++) {
         for (int r = 0; r < 10; r++) {

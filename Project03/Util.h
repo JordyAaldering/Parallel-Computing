@@ -7,11 +7,19 @@
 
 class Util {
 
-#define N 100
+#define N 1000
 #define HEAT 400.0
 #define EPS 0.05
 
 public:
+    inline static void Diffuse(double* in, double* out, size_t n, size_t i) {
+        out[i] = 0.25 * in[i]    // center
+            + 0.250 * in[i - n]  // upper
+            + 0.125 * in[i + n]  // lower
+            + 0.175 * in[i - 1]  // left
+            + 0.200 * in[i + 1]; // right
+    }
+
     /// <summary>
     /// Allocate a flattened matrix of 'n by n' elements.
     /// Initialise the values of the matrix with 0s.
