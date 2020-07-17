@@ -29,7 +29,8 @@ public:
 
     /// <summary> Write information about the program. </summary>
     inline static void WriteInfo(std::ofstream& file, int n, int iterations, clock_t start, clock_t end) {
-        file << n << "," << iterations << "," << (int)((end - start) / (CLOCKS_PER_SEC / 1000)) << std::endl;
+        file << n << "," << (int)(n * n * sizeof(double) / (1024 * 1024)) << "," << iterations
+            << "," << (int)((end - start) / (CLOCKS_PER_SEC / 1000)) << std::endl;
     }
 
     /// <summary> Print the values of the given matrix. </summary>
