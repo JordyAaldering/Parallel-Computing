@@ -1,8 +1,22 @@
-#include <mpi.h>
+#include <fstream>
+#include <iostream>
 #include <stdio.h>
+#include <mpi.h>
+
+void writeToFile() {
+    std::ofstream file;
+    file.open("Evaluation/data.csv", std::fstream::app);
+    if (!file.is_open()) {
+        printf("Could not open file.");
+        return;
+    }
+
+    file << "text" << std::endl;
+    file.close();
+}
 
 // mpiexec -n 8 "D:\Documents\Parallel-Computing\Project03\Debug\Project03.exe"
-int main(int argc, char** argv) {
+int main2(int argc, char** argv) {
     int rank, size;
     double start, end;
 
@@ -20,6 +34,8 @@ int main(int argc, char** argv) {
     if (rank == 0) {
         printf("Finished in %fs.\n", end - start);
     }
+
+    writeToFile();
 
     return 0;
 }
