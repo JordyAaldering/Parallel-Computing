@@ -5,7 +5,7 @@
 #include <math.h>
 #include <memory>
 
-#define N 1000
+#define N 100
 #define HEAT 400.0
 #define EPS 0.05
 

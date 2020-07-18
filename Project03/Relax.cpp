@@ -53,7 +53,7 @@ static void Run(std::ofstream& file, size_t n, double heat, double eps) {
     PrintMatrix(n, heat, eps, iterations, start, end);
 }
 
-int main() {
+int main2() {
     std::ofstream file = Shared::OpenFile("relax");
 
     for (int i = 1; i <= STEPS; i++) {

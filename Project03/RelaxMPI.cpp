@@ -103,9 +103,9 @@ static void Run(std::ofstream& file, size_t n, double heat, double eps) {
     PrintBlock(rank, worldSize, arraySize, n, heat, eps, iterations, start, end);
 }
 
-int main2(int argc, char** argv) {
-    MPI_Init(&argc, &argv);
+int main(int argc, char** argv) {
     std::ofstream file = Shared::OpenFile("mpi");
+    MPI_Init(&argc, &argv);
 
     for (int i = 1; i <= STEPS; i++) {
         for (int r = 0; r < REPEATS; r++) {
