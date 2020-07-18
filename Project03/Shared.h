@@ -5,12 +5,14 @@
 #include <math.h>
 #include <memory>
 
-class Shared {
-
 #define N 1000
 #define HEAT 400.0
 #define EPS 0.05
 
+#define STEPS 50
+#define REPEATS 5
+
+class Shared {
 public:
     /// <summary> Allocate a flattened matrix of 'size' elements.
     /// Initialise the values of the matrix with 0s and 'heat'. </summary>
@@ -30,10 +32,28 @@ public:
             + 0.200 * in[i + 1]; // right
     }
 
-    /// <summary> Write information about the program. </summary>
-    inline static void WriteInfo(std::ofstream& file, int n, int iterations, int ms) {
-        file << n << "," << (int)(n * n * sizeof(double) / (1024 * 1024))
-            << "," << iterations << "," << ms << std::endl;
+    inline static std::ofstream OpenFile(const std::string filename) {
+        std::ofstream file;
+        std::string path = "Evaluation/" + filename + ".csv";
+        file.open(path);
+
+        if (!file.is_open()) {
+            printf("Could not open file '%s.csv'.", filename);
+            exit(1);
+        }
+
+        return file;
     }
 
+    /// <summary> Write information about the program. </summary>
+    inline static void WriteInfo(std::ofstream& file, int n, int iterations, int ms, int cores = -1) {
+        if (cores > 0) {
+            file << cores << ",";
+        }
+
+        file << n << "," 
+             << (int)(n * n * sizeof(double) / (1024 * 1024)) << ","
+             << iterations << ","
+             << ms << std::endl;
+    }
 };

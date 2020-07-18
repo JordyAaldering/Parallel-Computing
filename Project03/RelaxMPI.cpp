@@ -15,6 +15,21 @@ static void PrintBlock(int rank, int worldSize, int arraySize, int n, double hea
     printf("\n");
 }
 
+static size_t GetArraySize(int rank, int worldSize, int n) {
+    size_t arraySize = (n / worldSize) * n;
+    if (rank != 0) { // share top row
+        arraySize += n;
+    }
+    if (rank != worldSize - 1) { // share bottom row
+        arraySize += n;
+    }
+    else { // add remainder
+        arraySize += (n % worldSize) * n;
+    }
+
+    return arraySize;
+}
+
 static bool Relax(double* in, double* out, size_t n, size_t arraySize, double eps) {
     bool stable = true;
     for (size_t i = n + 1; i < arraySize - n - n; i += 3) {
@@ -29,67 +44,35 @@ static bool Relax(double* in, double* out, size_t n, size_t arraySize, double ep
     return stable;
 }
 
-static void SendRecvBottomRow(int rank, int worldSize, size_t n, size_t arraySize, double* out) {
+static void UpdateNeighbours(int rank, int worldSize, size_t n, size_t arraySize, double* out) {
     if (rank % 2 == 0) {
         if (rank < worldSize - 1) {
-            // printf("Process %d sending bottom row.\n", rank);
             MPI_Send(&out[arraySize - n - 1], n, MPI_DOUBLE, rank + 1, 0, MPI_COMM_WORLD);
+            MPI_Recv(&out[arraySize - n - 1], n, MPI_DOUBLE, rank + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
         if (rank > 0) {
             MPI_Recv(&out[0], n, MPI_DOUBLE, rank - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            // printf("Process %d received bottom row.\n", rank);
+            MPI_Send(&out[0], n, MPI_DOUBLE, rank - 1, 1, MPI_COMM_WORLD);
         }
     } else {
         if (rank > 0) {
             MPI_Recv(&out[0], n, MPI_DOUBLE, rank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            // printf("Process %d received bottom row.\n", rank);
-        }
-        if (rank < worldSize - 1) {
-            // printf("Process %d sending bottom row.\n", rank);
-            MPI_Send(&out[arraySize - n - 1], n, MPI_DOUBLE, rank + 1, 1, MPI_COMM_WORLD);
-        }
-    }
-}
-
-static void SendRecvTopRow(int rank, int worldSize, size_t n, size_t arraySize, double* out) {
-    if (rank % 2 == 0) {
-        if (rank > 0) {
-            // printf("Process %d sending top row.\n", rank);
             MPI_Send(&out[0], n, MPI_DOUBLE, rank - 1, 0, MPI_COMM_WORLD);
         }
         if (rank < worldSize - 1) {
+            MPI_Send(&out[arraySize - n - 1], n, MPI_DOUBLE, rank + 1, 1, MPI_COMM_WORLD);
             MPI_Recv(&out[arraySize - n - 1], n, MPI_DOUBLE, rank + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            // printf("Process %d received top row.\n", rank);
-        }
-    } else {
-        if (rank < worldSize - 1) {
-            MPI_Recv(&out[arraySize - n - 1], n, MPI_DOUBLE, rank + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            // printf("Process %d received top row.\n", rank);
-        }
-        if (rank > 0) {
-            // printf("Process %d sending top row.\n", rank);
-            MPI_Send(&out[0], n, MPI_DOUBLE, rank - 1, 1, MPI_COMM_WORLD);
         }
     }
 }
 
-static void Run(int argc, char** argv, std::ofstream& file, size_t n, double heat, double eps) {
-    MPI_Init(&argc, &argv);
+static void Run(std::ofstream& file, size_t n, double heat, double eps) {
     double start = MPI_Wtime();
 
     int rank, worldSize;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &worldSize);
-
-    size_t arraySize = (n / worldSize) * n;
-    if (rank != 0) { // share top row
-        arraySize += n;
-    }
-    if (rank != worldSize - 1) { // share bottom row
-        arraySize += n;
-    } else { // add remainder
-        arraySize += (n % worldSize) * n;
-    }
+    size_t arraySize = GetArraySize(rank, worldSize, n);
 
     double* in = Shared::CreateMatrix(arraySize, rank == 0 ? n / 2 : -1, heat);
     double* out = Shared::CreateMatrix(arraySize, rank == 0 ? n / 2 : -1, heat);
@@ -104,8 +87,7 @@ static void Run(int argc, char** argv, std::ofstream& file, size_t n, double hea
             break;
         }
 
-        SendRecvBottomRow(rank, worldSize, n, arraySize, out);
-        SendRecvTopRow(rank, worldSize, n, arraySize, out);
+        UpdateNeighbours(rank, worldSize, n, arraySize, out);
 
         tmp = in;
         in = out;
@@ -114,28 +96,25 @@ static void Run(int argc, char** argv, std::ofstream& file, size_t n, double hea
     }
 
     double end = MPI_Wtime();
-    MPI_Finalize();
     free(in);
     free(out);
 
-    Shared::WriteInfo(file, n, iterations, (int)((end - start) * 1000.0));
+    Shared::WriteInfo(file, n, iterations, (int)((end - start) * 1000.0), worldSize);
     PrintBlock(rank, worldSize, arraySize, n, heat, eps, iterations, start, end);
 }
 
-int main(int argc, char** argv) {
-    std::ofstream file;
-    file.open("Evaluation/mpi.csv", std::fstream::app);
-    if (!file.is_open()) {
-        printf("Could not open file.");
-        return 1;
-    }
+int main2(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+    std::ofstream file = Shared::OpenFile("mpi");
 
-    for (int i = 1; i <= 50; i++) {
-        for (int r = 0; r < 5; r++) {
-            Run(argc, argv, file, i * N, HEAT, EPS);
+    for (int i = 1; i <= STEPS; i++) {
+        for (int r = 0; r < REPEATS; r++) {
+            Run(file, i * N, HEAT, EPS);
+            MPI_Barrier(MPI_COMM_WORLD);
         }
     }
 
+    MPI_Finalize();
     file.close();
     return 0;
 }

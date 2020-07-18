@@ -53,16 +53,11 @@ static void Run(std::ofstream& file, size_t n, double heat, double eps) {
     PrintMatrix(n, heat, eps, iterations, start, end);
 }
 
-int main2() {
-    std::ofstream file;
-    file.open("Evaluation/relax.csv");
-    if (!file.is_open()) {
-        printf("Could not open file.");
-        return 1;
-    }
+int main() {
+    std::ofstream file = Shared::OpenFile("relax");
 
-    for (int i = 1; i <= 50; i++) {
-        for (int r = 0; r < 5; r++) {
+    for (int i = 1; i <= STEPS; i++) {
+        for (int r = 0; r < REPEATS; r++) {
             Run(file, i * N, HEAT, EPS);
         }
     }
