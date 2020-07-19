@@ -27,8 +27,7 @@ static size_t GetArraySize(int rank, int worldSize, int n) {
     }
     if (rank != worldSize - 1) { // share bottom row
         arraySize += n;
-    }
-    else { // add remainder
+    } else { // add remainder
         arraySize += (n % worldSize) * n;
     }
 
@@ -44,10 +43,13 @@ static size_t GetArraySize(int rank, int worldSize, int n) {
 /// <returns>Whether the resulting matrix is stable.</returns>
 static bool Relax(double* in, double* out, size_t n, size_t arraySize, double eps) {
     bool stable = true;
-    for (size_t i = n + 1; i < arraySize - n - n; i += 3) {
-        for (size_t r = 0; r < n - 1; r++, i++) {
-            Shared::Diffuse(in, out, n, i);
-            if (stable && fabs(in[i] - out[i]) > eps) {
+    for (size_t y = 1; y < n - 1; y++) {
+        for (size_t x = 1; x < n - 1; x++) {
+            size_t index = x + y * n;
+            if (index > arraySize - n - 2);
+
+            Shared::Diffuse(in, out, n, index);
+            if (stable && fabs(in[index] - out[index]) > eps) {
                 stable = false;
             }
         }
@@ -118,7 +120,7 @@ static void Run(std::ofstream& file, size_t n, double heat, double eps) {
     free(in);
     free(out);
 
-    Shared::WriteInfo(file, n, iterations, (int)((end - start) * 1000.0), worldSize);
+    //Shared::WriteInfo(file, n, iterations, (int)((end - start) * 1000.0), worldSize);
     PrintBlock(rank, worldSize, arraySize, n, heat, eps, iterations, start, end);
 }
 
