@@ -1,7 +1,7 @@
 #include "Shared.h"
 #include <mpi.h>
 
-/// <summary> Print information about the program. </summary>
+/// <summary> Print information about the state of the program. </summary>
 static void PrintBlock(int rank, int worldSize, int arraySize, int n, double heat, double eps, int iterations, double start, double end) {
     printf("Rank      : %d\n", rank);
     printf("World     : %d\n", worldSize);
@@ -15,6 +15,11 @@ static void PrintBlock(int rank, int worldSize, int arraySize, int n, double hea
     printf("\n");
 }
 
+/// <summary> Calculates the size of this process' matrix. </summary>
+/// <param name="rank">The rank of the current process.</param>
+/// <param name="worldSize">The total number of processes.</param>
+/// <param name="n">The width of the matrix.</param>
+/// <returns>The size of this process' matrix.</returns>
 static size_t GetArraySize(int rank, int worldSize, int n) {
     size_t arraySize = (n / worldSize) * n;
     if (rank != 0) { // share top row
@@ -30,6 +35,13 @@ static size_t GetArraySize(int rank, int worldSize, int n) {
     return arraySize;
 }
 
+/// <summary> Individual step of the 5-point stencil. </summary>
+/// <param name="in">The original matrix.</param>
+/// <param name="out">The resulting matrix.</param>
+/// <param name="n">The width of the matrix.</param>
+/// <param name="arraySize">The size of this process' matrix.</param>
+/// <param name="eps">The epsilon value.</param>
+/// <returns>Whether the resulting matrix is stable.</returns>
 static bool Relax(double* in, double* out, size_t n, size_t arraySize, double eps) {
     bool stable = true;
     for (size_t i = n + 1; i < arraySize - n - n; i += 3) {
@@ -44,6 +56,13 @@ static bool Relax(double* in, double* out, size_t n, size_t arraySize, double ep
     return stable;
 }
 
+/// <summary>Updates neighbouring processes by telling them about overlapping values with this process' matrix.
+/// Then this process updates its matrix with the data received from its neighbours.</summary>
+/// <param name="rank">The rank of the current process.</param>
+/// <param name="worldSize">The total number of processes.</param>
+/// <param name="n">The width of the matrix.</param>
+/// <param name="arraySize">The size of this process' matrix.</param>
+/// <param name="out">The resulting matrix.</param>
 static void UpdateNeighbours(int rank, int worldSize, size_t n, size_t arraySize, double* out) {
     if (rank % 2 == 0) {
         if (rank < worldSize - 1) {
@@ -74,16 +93,16 @@ static void Run(std::ofstream& file, size_t n, double heat, double eps) {
     MPI_Comm_size(MPI_COMM_WORLD, &worldSize);
     size_t arraySize = GetArraySize(rank, worldSize, n);
 
+    int iterations = 1;
     double* in = Shared::CreateMatrix(arraySize, rank == 0 ? n / 2 : -1, heat);
     double* out = Shared::CreateMatrix(arraySize, rank == 0 ? n / 2 : -1, heat);
     double* tmp;
-    int iterations = 1;
 
     bool global_stable;
     while (true) {
         bool local_stable = Relax(in, out, n, arraySize, eps);
         MPI_Allreduce(&local_stable, &global_stable, 1, MPI_C_BOOL, MPI_LAND, MPI_COMM_WORLD);
-        if (global_stable) {
+        if (global_stable) { // only when every process is stable we can stop
             break;
         }
 

@@ -1,7 +1,7 @@
 #include "Shared.h"
 #include <time.h>
 
-/// <summary> Print information about the program. </summary>
+/// <summary> Print information about the state of the program. </summary>
 static void PrintMatrix(int n, double heat, double eps, int iterations, clock_t start, clock_t end) {
     printf("N         : %d\n", n);
     printf("Size      : %dMB\n", (int)(n * n * sizeof(double) / (1024 * 1024)));
@@ -12,10 +12,12 @@ static void PrintMatrix(int n, double heat, double eps, int iterations, clock_t 
     printf("\n");
 }
 
-/// <summary> Individual step of the 5-point stencil.
-/// Computes values in matrix 'out' from those in matrix 'in'. </summary>
-/// <param name="in">A matrix size 'n by n'.</param>
-/// <param name="out">A matrix size 'n by n'.</param>
+/// <summary> Individual step of the 5-point stencil. </summary>
+/// <param name="in">The original matrix.</param>
+/// <param name="out">The resulting matrix.</param>
+/// <param name="n">The width of the matrix.</param>
+/// <param name="eps">The epsilon value.</param>
+/// <returns>Whether the resulting matrix is stable.</returns>
 static bool Relax(double* in, double* out, size_t n, double eps) {
     bool stable = true;
     for (size_t i = n + 1; i < n * (n - 2); i += 3) {
@@ -33,10 +35,10 @@ static bool Relax(double* in, double* out, size_t n, double eps) {
 static void Run(std::ofstream& file, size_t n, double heat, double eps) {
     clock_t start = clock();
 
+    int iterations = 1;
     double* in = Shared::CreateMatrix(n * n, n / 2, heat);
     double* out = Shared::CreateMatrix(n * n, n / 2, heat);
     double* tmp;
-    int iterations = 1;
 
     while (!Relax(in, out, n, eps)) {
         tmp = in;
