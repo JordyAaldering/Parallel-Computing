@@ -7,6 +7,9 @@
 *.vcxproj.filters
 *.vcxproj.user
 
+# Images
+*.png
+
 # Compiled files
 [Bb]in/
 [Dd]ebug/
