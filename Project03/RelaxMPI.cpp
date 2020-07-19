@@ -46,7 +46,9 @@ static bool Relax(double* in, double* out, size_t n, size_t arraySize, double ep
     for (size_t y = 1; y < n - 1; y++) {
         for (size_t x = 1; x < n - 1; x++) {
             size_t index = x + y * n;
-            if (index > arraySize - n - 2);
+            if (index > arraySize - n - 2) {
+                return stable;
+            }
 
             Shared::Diffuse(in, out, n, index);
             if (stable && fabs(in[index] - out[index]) > eps) {
@@ -120,7 +122,7 @@ static void Run(std::ofstream& file, size_t n, double heat, double eps) {
     free(in);
     free(out);
 
-    //Shared::WriteInfo(file, n, iterations, (int)((end - start) * 1000.0), worldSize);
+    Shared::WriteInfo(file, n, iterations, (int)((end - start) * 1000.0), worldSize);
     PrintBlock(rank, worldSize, arraySize, n, heat, eps, iterations, start, end);
 }
 
