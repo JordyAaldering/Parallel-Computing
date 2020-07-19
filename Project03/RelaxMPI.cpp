@@ -43,13 +43,9 @@ static size_t GetArraySize(int rank, int worldSize, int n) {
 /// <returns>Whether the resulting matrix is stable.</returns>
 static bool Relax(double* in, double* out, size_t n, size_t arraySize, double eps) {
     bool stable = true;
-    for (size_t y = 1; y < n - 1; y++) {
+    for (size_t y = 1; y < arraySize / n - 1; y++) {
         for (size_t x = 1; x < n - 1; x++) {
             size_t index = x + y * n;
-            if (index > arraySize - n - 2) {
-                return stable;
-            }
-
             Shared::Diffuse(in, out, n, index);
             if (stable && fabs(in[index] - out[index]) > eps) {
                 stable = false;
