@@ -44,7 +44,7 @@ public:
     inline static std::ofstream OpenFile(const std::string filename) {
         std::ofstream file;
         std::string path = "Evaluation/" + filename + ".csv";
-        file.open(path);
+        file.open(path, std::ios_base::app);
 
         if (!file.is_open()) {
             printf("Could not open file '%s.csv'.", filename);
