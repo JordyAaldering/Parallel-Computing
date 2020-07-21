@@ -1,7 +1,7 @@
 #include "Shared.h"
 #include <time.h>
 
-/// <summary> Print information about the state of the program. </summary>
+/// <summary>Prints information about the state of the program.</summary>
 static void PrintMatrix(int n, double heat, double eps, int iterations, clock_t start, clock_t end) {
     printf("N         : %d\n", n);
     printf("Size      : %dMB\n", (int)(n * n * sizeof(double) / (1024 * 1024)));
@@ -12,7 +12,7 @@ static void PrintMatrix(int n, double heat, double eps, int iterations, clock_t 
     printf("\n");
 }
 
-/// <summary> Individual step of the 5-point stencil. </summary>
+/// <summary>Individual step of the 5-point stencil.</summary>
 /// <param name="in">The original matrix.</param>
 /// <param name="out">The resulting matrix.</param>
 /// <param name="n">The width of the matrix.</param>
@@ -24,6 +24,7 @@ static bool Relax(double* in, double* out, size_t n, double eps) {
         for (size_t x = 1; x < n - 1; x++) {
             size_t index = x + y * n;
             Shared::Diffuse(in, out, n, index);
+
             if (stable && fabs(in[index] - out[index]) > eps) {
                 stable = false;
             }
@@ -56,7 +57,7 @@ static void Run(std::ofstream& file, size_t n, double heat, double eps) {
     PrintMatrix(n, heat, eps, iterations, start, end);
 }
 
-int main2() {
+int main() {
     std::ofstream file = Shared::OpenFile("relax");
 
     for (int i = 1; i <= STEPS; i++) {

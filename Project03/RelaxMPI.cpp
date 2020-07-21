@@ -1,7 +1,7 @@
 #include "Shared.h"
 #include <mpi.h>
 
-/// <summary> Print information about the state of the program. </summary>
+/// <summary>Prints information about the state of the program.</summary>
 static void PrintBlock(int rank, int worldSize, int arraySize, int n, double heat, double eps, int iterations, double start, double end) {
     printf("Rank      : %d\n", rank);
     printf("World     : %d\n", worldSize);
@@ -15,7 +15,7 @@ static void PrintBlock(int rank, int worldSize, int arraySize, int n, double hea
     printf("\n");
 }
 
-/// <summary> Calculates the size of this process' matrix. </summary>
+/// <summary>Calculates the size of this process' matrix.</summary>
 /// <param name="rank">The rank of the current process.</param>
 /// <param name="worldSize">The total number of processes.</param>
 /// <param name="n">The width of the matrix.</param>
@@ -34,7 +34,7 @@ static size_t GetArraySize(int rank, int worldSize, int n) {
     return arraySize;
 }
 
-/// <summary> Individual step of the 5-point stencil. </summary>
+/// <summary>Individual step of the 5-point stencil.</summary>
 /// <param name="in">The original matrix.</param>
 /// <param name="out">The resulting matrix.</param>
 /// <param name="n">The width of the matrix.</param>
@@ -47,6 +47,7 @@ static bool Relax(double* in, double* out, size_t n, size_t arraySize, double ep
         for (size_t x = 1; x < n - 1; x++) {
             size_t index = x + y * n;
             Shared::Diffuse(in, out, n, index);
+
             if (stable && fabs(in[index] - out[index]) > eps) {
                 stable = false;
             }

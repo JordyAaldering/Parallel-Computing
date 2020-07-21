@@ -10,11 +10,11 @@
 #define EPS 0.05
 
 #define STEPS 50
-#define REPEATS 5
+#define REPEATS 10
 
 class Shared {
 public:
-    /// <summary> Allocate a flattened matrix and initialise the values. </summary>
+    /// <summary>Allocate a flattened matrix and initialise the values.</summary>
     /// <param name="size">The total size of the matrix.</param>
     /// <param name="heatIndex">At what index to place the heat, -1 if no heat should be added.</param>
     /// <param name="heat">The heat value to place.</param>
@@ -27,7 +27,7 @@ public:
         return m;
     }
 
-    /// <summary> Diffuses a point using neighbouring values. </summary>
+    /// <summary>Diffuses a point using neighbouring values.</summary>
     /// <param name="in">The original matrix.</param>
     /// <param name="out">The resulting matrix.</param>
     /// <param name="n">The width of the matrix.</param>
@@ -40,7 +40,9 @@ public:
             + 0.200 * in[i + 1]; // right
     }
 
-    /// <summary> Opens a file and returns it. </summary>
+    /// <summary>Opens a csv file and returns it.</summary>
+    /// <param name="filename">The name of the file to open.</param>
+    /// <returns>The opened file.</returns>
     inline static std::ofstream OpenFile(const std::string filename) {
         std::ofstream file;
         std::string path = "Evaluation/" + filename + ".csv";
@@ -54,7 +56,7 @@ public:
         return file;
     }
 
-    /// <summary> Write information about the state of the program. </summary>
+    /// <summary>Write information about the state of the program.</summary>
     inline static void WriteInfo(std::ofstream& file, int n, int iterations, int ms, int cores = -1) {
         if (cores > 0) {
             file << cores << ",";
