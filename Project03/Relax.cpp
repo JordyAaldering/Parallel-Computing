@@ -24,7 +24,6 @@ static bool Relax(double* in, double* out, size_t n, double eps) {
         for (size_t x = 1; x < n - 1; x++) {
             size_t index = x + y * n;
             Shared::Diffuse(in, out, n, index);
-
             if (stable && fabs(in[index] - out[index]) > eps) {
                 stable = false;
             }
