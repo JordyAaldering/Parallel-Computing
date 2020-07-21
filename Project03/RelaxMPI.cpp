@@ -98,9 +98,9 @@ static void Run(std::ofstream& file, size_t n, double heat, double eps) {
     double* out = Shared::CreateMatrix(arraySize, rank == 0 ? n / 2 : -1, heat);
     double* tmp;
 
-    bool global_stable;
+    bool local_stable, global_stable;
     while (true) {
-        bool local_stable = Relax(in, out, n, arraySize, eps);
+        local_stable = Relax(in, out, n, arraySize, eps);
         MPI_Allreduce(&local_stable, &global_stable, 1, MPI_C_BOOL, MPI_LAND, MPI_COMM_WORLD);
         if (global_stable) { // only when every process is stable we can stop
             break;
